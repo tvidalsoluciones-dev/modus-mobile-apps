@@ -1,9 +1,10 @@
-const CACHE_NAME = 'modus-app-v1';
+const CACHE_NAME = 'modus-app-v2';
 const ASSETS = [
   './',
   './index.html',
   './manifest.json',
-  './icon-192.png'
+  './icon-192.png',
+  './icon-512.png'
 ];
 
 self.addEventListener('install', (e) => {

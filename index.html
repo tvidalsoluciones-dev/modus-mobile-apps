@@ -3,43 +3,691 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Modus Mobile Tool</title>
+  <title>Modus Mobile | Ficha Técnica y Garantía ATDM</title>
 
-  <!-- Parámetros PWA -->
+  <!-- Metadatos PWA -->
   <link rel="manifest" href="manifest.json">
-  <meta name="theme-color" content="#1f6feb">
+  <meta name="theme-color" content="#0d1117">
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <link rel="apple-touch-icon" href="icon-192.png">
 
-  <!-- Estilo base oscuro de alto rendimiento -->
   <style>
-    body {
+    :root {
+      --bg-base: #0d1117;
+      --bg-surface: #161b22;
+      --bg-card: #21262d;
+      --border-color: #30363d;
+      --text-main: #f0f6fc;
+      --text-muted: #8b949e;
+      --brand-blue: #1f6feb;
+      --brand-blue-hover: #388bfd;
+      --status-active: #238636;
+      --status-active-bg: rgba(35, 134, 54, 0.15);
+      --status-warning: #d29922;
+      --status-warning-bg: rgba(210, 153, 34, 0.15);
+      --status-expired: #da3633;
+      --status-expired-bg: rgba(218, 54, 51, 0.15);
+      --radius-sm: 8px;
+      --radius-md: 14px;
+      --font-stack: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
       margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: var(--bg-base);
+      color: var(--text-main);
+      font-family: var(--font-stack);
+      line-height: 1.5;
       padding: 16px;
-      background-color: #0d1117;
+      padding-bottom: 90px;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .container {
+      max-width: 520px;
+      margin: 0 auto;
+    }
+
+    /* Cabecera Corporativa */
+    .header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 20px;
+      padding-bottom: 14px;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .header-logo {
+      width: 44px;
+      height: 44px;
+      border-radius: var(--radius-sm);
+      object-fit: cover;
+      background: var(--bg-surface);
+      border: 1px solid var(--border-color);
+    }
+
+    .header-info h1 {
+      font-size: 1.1rem;
+      font-weight: 700;
+      letter-spacing: -0.3px;
+      color: var(--text-main);
+    }
+
+    .header-info p {
+      font-size: 0.75rem;
+      color: var(--brand-blue);
+      text-transform: uppercase;
+      font-weight: 600;
+      letter-spacing: 0.8px;
+    }
+
+    /* Buscador o Selector de Ticket */
+    .ticket-bar {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 16px;
+    }
+
+    .ticket-input {
+      flex: 1;
+      background: var(--bg-surface);
+      border: 1px solid var(--border-color);
+      color: var(--text-main);
+      padding: 10px 14px;
+      border-radius: var(--radius-sm);
+      font-size: 0.9rem;
+      font-family: monospace;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    .ticket-input:focus {
+      border-color: var(--brand-blue);
+    }
+
+    .ticket-btn {
+      background: var(--brand-blue);
+      color: #fff;
+      border: none;
+      padding: 0 16px;
+      border-radius: var(--radius-sm);
+      font-size: 0.85rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    /* Tarjetas Modulares */
+    .card {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      padding: 18px;
+      margin-bottom: 16px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    }
+
+    /* Hero de Estado de Garantía */
+    .hero-card {
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .status-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 14px;
+      border-radius: 20px;
+      font-size: 0.8rem;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      margin-bottom: 12px;
+    }
+
+    .status-badge.active {
+      background: var(--status-active-bg);
+      color: #3fb950;
+      border: 1px solid rgba(56, 185, 80, 0.3);
+    }
+
+    .status-badge.warning {
+      background: var(--status-warning-bg);
+      color: #d29922;
+      border: 1px solid rgba(210, 153, 34, 0.3);
+    }
+
+    .status-badge.expired {
+      background: var(--status-expired-bg);
+      color: #f85149;
+      border: 1px solid rgba(248, 81, 73, 0.3);
+    }
+
+    .hero-title {
+      font-size: 1.4rem;
+      font-weight: 800;
+      margin-bottom: 4px;
+    }
+
+    .hero-subtitle {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      margin-bottom: 14px;
+    }
+
+    .progress-bar {
+      width: 100%;
+      height: 8px;
+      background: var(--bg-card);
+      border-radius: 4px;
+      overflow: hidden;
+      margin: 12px 0;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: var(--brand-blue);
+      border-radius: 4px;
+      transition: width 0.4s ease;
+    }
+
+    /* Datos Técnicos de Dispositivo */
+    .card-title {
+      font-size: 0.85rem;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      color: var(--brand-blue);
+      font-weight: 700;
+      margin-bottom: 14px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .data-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    .data-item {
+      background: var(--bg-card);
+      padding: 10px 12px;
+      border-radius: var(--radius-sm);
+      border: 1px solid rgba(255, 255, 255, 0.04);
+    }
+
+    .data-label {
+      font-size: 0.72rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      margin-bottom: 2px;
+    }
+
+    .data-value {
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: var(--text-main);
+    }
+
+    .highlight-badge {
+      background: rgba(31, 111, 235, 0.15);
+      color: #58a6ff;
+      border: 1px solid rgba(88, 166, 255, 0.3);
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-size: 0.75rem;
+      display: inline-block;
+      margin-top: 4px;
+      font-weight: 600;
+    }
+
+    /* Lista de Intervenciones */
+    .treatment-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .treatment-item {
+      background: var(--bg-card);
+      border-left: 3px solid var(--brand-blue);
+      padding: 10px 14px;
+      border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+    }
+
+    .treatment-title {
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: var(--text-main);
+      margin-bottom: 2px;
+    }
+
+    .treatment-desc {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+    }
+
+    /* Fechas de Mantenimiento */
+    .timeline {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .timeline-row {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.85rem;
+      padding: 8px 0;
+      border-bottom: 1px dashed var(--border-color);
+    }
+
+    .timeline-row:last-child {
+      border-bottom: none;
+    }
+
+    /* Cláusulas Legales */
+    .legal-box {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      background: var(--bg-card);
+      padding: 12px;
+      border-radius: var(--radius-sm);
+      line-height: 1.6;
+    }
+
+    .legal-box strong {
+      color: var(--text-main);
+    }
+
+    /* Barra Inferior Fija */
+    .bottom-bar {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: rgba(22, 27, 34, 0.95);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border-top: 1px solid var(--border-color);
+      padding: 12px 16px;
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+      z-index: 100;
+    }
+
+    .bottom-bar .container {
+      width: 100%;
+      display: flex;
+      gap: 10px;
+    }
+
+    .btn-wa {
+      flex: 1;
+      background: #238636;
+      color: #fff;
+      text-decoration: none;
+      padding: 12px;
+      border-radius: var(--radius-sm);
+      font-size: 0.9rem;
+      font-weight: 700;
+      text-align: center;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .btn-install {
+      background: var(--brand-blue);
+      color: #fff;
+      border: none;
+      padding: 12px 16px;
+      border-radius: var(--radius-sm);
+      font-size: 0.85rem;
+      font-weight: 700;
+      cursor: pointer;
+      display: none;
+    }
+
+    .hash-footer {
+      text-align: center;
+      font-size: 0.7rem;
+      color: #484f58;
+      font-family: monospace;
+      margin-top: 10px;
+    }
+
+    /* Estados de Carga y Error */
+    .loader {
+      text-align: center;
+      padding: 40px 0;
+      color: var(--text-muted);
+      font-size: 0.9rem;
+    }
+
+    .offline-tag {
+      display: none;
+      background: #30363d;
       color: #c9d1d9;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-      user-select: none;
-      -webkit-user-select: none;
+      font-size: 0.72rem;
+      padding: 4px 8px;
+      border-radius: 4px;
+      margin-bottom: 12px;
+      text-align: center;
     }
   </style>
 </head>
 <body>
 
-  <!-- Interfaz de la app -->
-  <h2>Panel Operativo ATDM</h2>
-  <div id="app">Listo para operar.</div>
+  <div class="container">
+    
+    <!-- Header -->
+    <header class="header">
+      <img src="icon-192.png" alt="Modus Mobile" class="header-logo">
+      <div class="header-info">
+        <h1>MODUS MOBILE</h1>
+        <p>Disciplina ATDM · Ficha Técnica Oficial</p>
+      </div>
+    </header>
 
-  <!-- Registro del Service Worker -->
+    <!-- Selector de Ticket -->
+    <div class="ticket-bar">
+      <input type="text" id="ticketInput" class="ticket-input" placeholder="#MM-2026-015">
+      <button id="btnSearch" class="ticket-btn">Consultar</button>
+    </div>
+
+    <!-- Indicador de Modo Offline -->
+    <div id="offlineTag" class="offline-tag">⚡ Modo sin conexión (Ficha cargada desde almacenamiento local seguro)</div>
+
+    <!-- Contenedor Principal Dinámico -->
+    <main id="appContent">
+      <div class="loader">Cargando ficha técnica y garantía...</div>
+    </main>
+
+    <!-- Hash y Sello -->
+    <div class="hash-footer" id="certHash">SISTEMA ATDM · VERIFICACIÓN INTEGRAL ACTIVA</div>
+
+  </div>
+
+  <!-- Barra Fija Inferior -->
+  <footer class="bottom-bar">
+    <div class="container">
+      <a id="btnWhatsApp" href="#" target="_blank" class="btn-wa">
+        💬 Contactar Soporte
+      </a>
+      <button id="btnInstallApp" class="btn-install">
+        📲 Instalar App
+      </button>
+    </div>
+  </footer>
+
   <script>
+    // Configuración de Supabase
+    const SUPABASE_URL = "https://yelenqphgmpsagesrvie.supabase.co";
+    const SUPABASE_ANON = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InllbGVucXBoZ21wc2FnZXNydmllIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTM0NTI2MTMsImV4cCI6MjEwOTAyODYxM30.tWJLpmZrZrD2hMAc_isdJdYJCQVi4oV0PIXVp2-uwV8";
+
+    // Elementos DOM
+    const appContent = document.getElementById('appContent');
+    const ticketInput = document.getElementById('ticketInput');
+    const btnSearch = document.getElementById('btnSearch');
+    const btnWhatsApp = document.getElementById('btnWhatsApp');
+    const btnInstallApp = document.getElementById('btnInstallApp');
+    const offlineTag = document.getElementById('offlineTag');
+    const certHash = document.getElementById('certHash');
+
+    // Detección de Ticket en URL o LocalStorage
+    function getTargetTicket() {
+      const params = new URLSearchParams(window.location.search);
+      return params.get('cert') || localStorage.getItem('mm_last_ticket') || 'MM-2026-015';
+    }
+
+    // Consulta de Certificado (con Fallback Offline)
+    async function loadCertificate(ticketId) {
+      ticketId = ticketId.trim().toUpperCase();
+      ticketInput.value = ticketId;
+      appContent.innerHTML = `<div class="loader">Consultando base de datos ATDM...</div>`;
+
+      try {
+        const res = await fetch(`${SUPABASE_URL}/rest/v1/certificados_atdm?ticket=eq.${ticketId}`, {
+          headers: {
+            'apikey': SUPABASE_ANON,
+            'Authorization': `Bearer ${SUPABASE_ANON}`
+          }
+        });
+
+        if (!res.ok) throw new Error("Error en servidor Supabase");
+        const data = await res.json();
+
+        if (data && data.length > 0) {
+          const cert = data[0];
+          // Guardar en caché local para persistencia offline
+          localStorage.setItem(`mm_cert_${ticketId}`, JSON.stringify(cert));
+          localStorage.setItem('mm_last_ticket', ticketId);
+          offlineTag.style.display = 'none';
+          renderCertificate(cert);
+        } else {
+          showError("No se encontró ningún certificado con el folio " + ticketId);
+        }
+      } catch (err) {
+        // Modo Offline: recuperar de localStorage
+        const cached = localStorage.getItem(`mm_cert_${ticketId}`);
+        if (cached) {
+          offlineTag.style.display = 'block';
+          renderCertificate(JSON.parse(cached));
+        } else {
+          showError("No fue posible conectar con el servidor y no hay copia local guardada de este folio.");
+        }
+      }
+    }
+
+    // Renderizado Dinámico
+    function renderCertificate(cert) {
+      // Cálculo de Garantía
+      const fechaInt = new Date(cert.fecha_intervencion + 'T00:00:00');
+      const diasTotales = cert.dias_garantia || 15;
+      const fechaExp = new Date(fechaInt);
+      fechaExp.setDate(fechaExp.getDate() + diasTotales);
+
+      const hoy = new Date();
+      const diffMs = fechaExp - hoy;
+      const diasRestantes = Math.ceil(diffMs / (1000 * 60 * 60 * 24));
+
+      // Próximo mantenimiento preventivo (6 meses)
+      const fechaMtto = new Date(fechaInt);
+      fechaMtto.setMonth(fechaMtto.getMonth() + 6);
+
+      let statusClass = 'active';
+      let statusText = 'GARANTÍA VIGENTE';
+      let heroSub = `Te quedan <strong>${diasRestantes} días</strong> de cobertura técnica directa.`;
+      let progressPct = Math.max(0, Math.min(100, Math.round((diasRestantes / diasTotales) * 100)));
+
+      if (diasRestantes <= 0) {
+        statusClass = 'expired';
+        statusText = 'GARANTÍA CONCLUIDA';
+        heroSub = `Periodo de prueba oficial finalizado el ${formatDate(fechaExp)}.`;
+        progressPct = 0;
+      } else if (diasRestantes <= 3) {
+        statusClass = 'warning';
+        statusText = 'PRÓXIMO A VENCER';
+        heroSub = `Atención: Quedan únicamente <strong>${diasRestantes} días</strong> de garantía.`;
+      }
+
+      // Tratamientos
+      let intervencionesHtml = '';
+      if (Array.isArray(cert.intervenciones) && cert.intervenciones.length > 0) {
+        intervencionesHtml = cert.intervenciones.map(item => `
+          <li class="treatment-item">
+            <div class="treatment-title">${item.titulo || item}</div>
+            ${item.detalle ? `<div class="treatment-desc">${item.detalle}</div>` : ''}
+          </li>
+        `).join('');
+      } else {
+        intervencionesHtml = `<li class="treatment-item"><div class="treatment-title">Optimización Integral ATDM</div></li>`;
+      }
+
+      // Enlace WhatsApp dinámico
+      const waMsg = encodeURIComponent(`Hola Tomás Vidal, soy ${cert.cliente_nombre}. Te contacto desde mi app de Modus Mobile sobre mi equipo ${cert.dispositivo_modelo} (Folio ${cert.ticket}).`);
+      btnWhatsApp.href = `https://api.whatsapp.com/send?phone=573100000000&text=${waMsg}`;
+
+      certHash.innerText = `SELLO DE SEGURIDAD: ${cert.hash_seguridad || 'ATDM-VERIFIED'}`;
+
+      appContent.innerHTML = `
+        <!-- Hero de Garantía -->
+        <section class="card hero-card">
+          <div class="status-badge ${statusClass}">
+            ● ${statusText}
+          </div>
+          <div class="hero-title">${cert.ticket}</div>
+          <div class="hero-subtitle">${heroSub}</div>
+          <div class="progress-bar">
+            <div class="progress-fill" style="width: ${progressPct}%;"></div>
+          </div>
+          <p style="font-size: 0.75rem; color: var(--text-muted);">
+            Cobertura contratada: ${diasTotales} días calendario
+          </p>
+        </section>
+
+        <!-- Ficha Técnica del Dispositivo -->
+        <section class="card">
+          <div class="card-title">📱 Ficha Técnica del Equipo</div>
+          <div class="data-grid">
+            <div class="data-item">
+              <div class="data-label">Dispositivo</div>
+              <div class="data-value">${cert.dispositivo_modelo}</div>
+            </div>
+            <div class="data-item">
+              <div class="data-label">Titular</div>
+              <div class="data-value">${cert.cliente_nombre}</div>
+            </div>
+            <div class="data-item">
+              <div class="data-label">Memoria RAM Real</div>
+              <div class="data-value">${cert.ram_fisica || 'Física'}</div>
+            </div>
+            <div class="data-item">
+              <div class="data-label">Perfil ATDM</div>
+              <div class="data-value">${cert.perfil_dmac || 'Estándar'}</div>
+            </div>
+          </div>
+          <div style="margin-top: 10px;">
+            <span class="highlight-badge">
+              🛡️ RAM Virtual: ${cert.ram_virtual_desactivada ? 'Desactivada (0 GB Swap - Protección Flash Activa)' : 'Sin Modificar'}
+            </span>
+          </div>
+        </section>
+
+        <!-- Tratamientos Aplicados -->
+        <section class="card">
+          <div class="card-title">⚙️ Intervenciones Realizadas</div>
+          <ul class="treatment-list">
+            ${intervencionesHtml}
+          </ul>
+        </section>
+
+        <!-- Cronograma de Servicio -->
+        <section class="card">
+          <div class="card-title">📅 Cronograma de Servicio</div>
+          <div class="timeline">
+            <div class="timeline-row">
+              <span style="color: var(--text-muted);">Fecha de Intervención:</span>
+              <strong>${formatDate(fechaInt)}</strong>
+            </div>
+            <div class="timeline-row">
+              <span style="color: var(--text-muted);">Vencimiento de Garantía:</span>
+              <strong>${formatDate(fechaExp)}</strong>
+            </div>
+            <div class="timeline-row">
+              <span style="color: var(--text-muted);">Próximo Mantenimiento Sugerido:</span>
+              <strong style="color: var(--brand-blue);">${formatDate(fechaMtto)} (Preventivo)</strong>
+            </div>
+          </div>
+        </section>
+
+        <!-- Cláusulas de Exclusión Legal -->
+        <section class="card">
+          <div class="card-title">⚖️ Cláusulas de Exclusión Legal</div>
+          <div class="legal-box">
+            La garantía de Modus Mobile ampara el correcto funcionamiento del software y los tratamientos aplicados. 
+            <strong>Quedan formalmente excluidos:</strong> daños por caídas o golpes mecánicos, filtración de humedad, 
+            manipulación o apertura por técnicos no certificados de la red Modus Mobile, o formateo de fábrica no coordinado 
+            que elimine las optimizaciones forenses.
+          </div>
+        </section>
+      `;
+    }
+
+    function formatDate(d) {
+      const meses = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'];
+      return `${d.getDate()} / ${meses[d.getMonth()]} / ${d.getFullYear()}`;
+    }
+
+    function showError(msg) {
+      appContent.innerHTML = `
+        <div class="card" style="text-align: center; border-color: var(--status-expired);">
+          <div style="font-size: 2rem; margin-bottom: 8px;">⚠️</div>
+          <div style="font-weight: 700; margin-bottom: 6px;">Atención</div>
+          <div style="color: var(--text-muted); font-size: 0.85rem;">${msg}</div>
+        </div>
+      `;
+    }
+
+    // Eventos
+    btnSearch.addEventListener('click', () => {
+      const t = ticketInput.value.trim();
+      if (t) loadCertificate(t);
+    });
+
+    ticketInput.addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') {
+        const t = ticketInput.value.trim();
+        if (t) loadCertificate(t);
+      }
+    });
+
+    // Soporte de Instalación PWA (beforeinstallprompt)
+    let deferredPrompt;
+    window.addEventListener('beforeinstallprompt', (e) => {
+      e.preventDefault();
+      deferredPrompt = e;
+      btnInstallApp.style.display = 'block';
+    });
+
+    btnInstallApp.addEventListener('click', async () => {
+      if (deferredPrompt) {
+        deferredPrompt.prompt();
+        const { outcome } = await deferredPrompt.userChoice;
+        if (outcome === 'accepted') {
+          btnInstallApp.style.display = 'none';
+        }
+        deferredPrompt = null;
+      }
+    });
+
+    // Service Worker
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
         navigator.serviceWorker.register('./sw.js')
-          .then(reg => console.log('[ATDM] Service Worker activo'))
+          .then(() => console.log('[ATDM] Service Worker activo'))
           .catch(err => console.error('[ATDM] Error SW:', err));
       });
     }
+
+    // Arranque inicial
+    loadCertificate(getTargetTicket());
   </script>
 </body>
 </html>
