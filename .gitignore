@@ -9,3 +9,13 @@ Desktop.ini
 .env
 .env.*
 !.env.example
+
+# Datos locales con PII (nunca al repo)
+.local/
+
+# Python
+__pycache__/
+*.pyc
+
+# Llave temporal para el emisor
+LLAVE.txt
