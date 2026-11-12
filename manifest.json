@@ -1,25 +1,42 @@
 {
-  "name": "Modus Mobile App",
+  "id": "./index.html",
+  "name": "Modus Mobile — Ficha Técnica y Garantía",
   "short_name": "ModusApp",
-  "description": "Herramienta operativa desarrollada bajo estándar ATDM",
+  "description": "Consulta segura de la ficha técnica, garantía y sello verificable de tu dispositivo.",
+  "lang": "es",
+  "dir": "ltr",
   "start_url": "./index.html",
   "scope": "./",
   "display": "standalone",
+  "display_override": ["standalone", "browser"],
   "orientation": "portrait",
   "background_color": "#0d1117",
-  "theme_color": "#1f6feb",
+  "theme_color": "#0d1117",
+  "categories": ["productivity", "utilities"],
   "icons": [
     {
       "src": "icon-192.png",
       "sizes": "192x192",
       "type": "image/png",
-      "purpose": "any maskable"
+      "purpose": "any"
     },
     {
       "src": "icon-512.png",
       "sizes": "512x512",
       "type": "image/png",
-      "purpose": "any maskable"
+      "purpose": "any"
+    },
+    {
+      "src": "icon-maskable-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "icon-maskable-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
     }
   ]
 }

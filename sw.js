@@ -1,14 +1,17 @@
 // Modus Mobile — Service Worker
 // Estrategia: network-first para todo lo propio; sin caché para Supabase.
 // Sube BUILD en cada despliegue para invalidar la caché anterior.
-const BUILD = '2026-11-12-1';
+const BUILD = '2026-11-12-2';
 const CACHE_NAME = `modus-shell-${BUILD}`;
 const ASSETS = [
   './',
   './index.html',
   './manifest.json',
   './icon-192.png',
-  './icon-512.png'
+  './icon-180.png',
+  './icon-512.png',
+  './icon-maskable-192.png',
+  './icon-maskable-512.png'
 ];
 
 self.addEventListener('install', (event) => {
