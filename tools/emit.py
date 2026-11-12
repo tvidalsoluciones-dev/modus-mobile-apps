@@ -36,6 +36,7 @@ LINKS = BASE / ".local" / "enlaces.txt"
 ENV = BASE / ".env"
 DEMO_ID = "4b93f0ff-4b27-4b92-b887-461a80049a78"
 PUBLIC_URL = "https://tvidalsoluciones-dev.github.io/modus-mobile-apps/"
+LINK_VERSION = "v=2"
 MESES = {"Ene": "01", "Feb": "02", "Mar": "03", "Abr": "04", "May": "05", "Jun": "06",
          "Jul": "07", "Ago": "08", "Sep": "09", "Oct": "10", "Nov": "11", "Dic": "12"}
 
@@ -235,6 +236,10 @@ def key_role(k):
     return None
 
 
+def public_link(ticket, token):
+    return f"{PUBLIC_URL}?{LINK_VERSION}&cert={ticket}#t={token}"
+
+
 def update_links_file(ticket, legacy, link):
     if not LINKS.exists():
         return
@@ -288,7 +293,7 @@ def rotate_or_link(ticket, rotate):
             print("Ficha no encontrada:", code, data)
             return
     row = data[0] if isinstance(data, list) else data
-    link = f"{PUBLIC_URL}?cert={row['ticket']}#t={row['token']}"
+    link = public_link(row["ticket"], row["token"])
     update_links_file(row["ticket"], row.get("folio_legado") or "", link)
     print(link)
 
@@ -420,7 +425,7 @@ def push(records):
     with LINKS.open("w", encoding="utf-8") as fh:
         for row in rows:
             fh.write(f"{row['ticket']}\t{row.get('folio_legado') or ''}\t"
-                     f"{PUBLIC_URL}?cert={row['ticket']}#t={row['token']}\n")
+                     f"{public_link(row['ticket'], row['token'])}\n")
     print(f"\nFilas en base: {len(rows)} | Enlaces: {LINKS}")
     for row in rows[:3]:
         print(f"  {row['ticket']} -> ?cert={row['ticket']}#t={row['token'][:12]}…")
