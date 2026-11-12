@@ -16,8 +16,10 @@ import hashlib
 import json
 import os
 import re
+import secrets
 import sys
 import urllib.error
+import urllib.parse
 import urllib.request
 from pathlib import Path
 
@@ -233,6 +235,128 @@ def key_role(k):
     return None
 
 
+def update_links_file(ticket, legacy, link):
+    if not LINKS.exists():
+        return
+    lines = LINKS.read_text(encoding="utf-8").splitlines()
+    out, found = [], False
+    for line in lines:
+        parts = line.split("\t")
+        if parts and parts[0] == ticket:
+            out.append(f"{ticket}\t{legacy}\t{link}")
+            found = True
+        else:
+            out.append(line)
+    if not found:
+        out.append(f"{ticket}\t{legacy}\t{link}")
+    LINKS.write_text("\n".join(out) + "\n", encoding="utf-8")
+
+
+def admin_env():
+    env = load_env()
+    url = (env.get("SUPABASE_URL") or "").rstrip("/")
+    key = (env.get("SUPABASE_SECRET_KEY") or env.get("SUPABASE_SERVICE_ROLE_KEY") or "").strip()
+    if not url or not key or "pega_aqui" in key:
+        print("ERROR: configura SUPABASE_URL y SUPABASE_SECRET_KEY en modus-pwa/.env")
+        return None, None
+    if key_role(key) != "service_role":
+        print("ERROR: se requiere la Secret key (service_role).")
+        return None, None
+    return url, key
+
+
+def rotate_or_link(ticket, rotate):
+    url, key = admin_env()
+    if not url:
+        return
+    ticket = ticket.strip()
+    if rotate:
+        new_token = secrets.token_hex(32)
+        code, data = api(url, key,
+                         f"/rest/v1/certificados_atdm?ticket=eq.{urllib.parse.quote(ticket)}",
+                         method="PATCH", body={"token": new_token},
+                         prefer="return=representation")
+        if code not in (200, 204) or not data:
+            print("ERROR al rotar:", code, data)
+            return
+        print(f"Token rotado para {ticket}. El enlace anterior deja de funcionar.")
+    else:
+        code, data = api(
+            url, key,
+            f"/rest/v1/certificados_atdm?ticket=eq.{urllib.parse.quote(ticket)}&select=ticket,token,folio_legado")
+        if code != 200 or not data:
+            print("Ficha no encontrada:", code, data)
+            return
+    row = data[0] if isinstance(data, list) else data
+    link = f"{PUBLIC_URL}?cert={row['ticket']}#t={row['token']}"
+    update_links_file(row["ticket"], row.get("folio_legado") or "", link)
+    print(link)
+
+
+def fetch_existing(url, key):
+    code, rows = api(
+        url, key,
+        "/rest/v1/certificados_atdm?select=ticket,folio_legado,cliente_nombre,dispositivo_modelo")
+    if code != 200 or not isinstance(rows, list):
+        print("ERROR: no se pudo leer la base para conservar los tickets:", code)
+        return None
+    return rows
+
+
+def legacy_codes(value):
+    return {code_base(part) for part in re.split(r"\s*/\s*", value or "") if part.strip()}
+
+
+def reuse_tickets(records, existing):
+    used, matched = set(), set()
+    for rec in records:
+        match = None
+        rec_legacy = legacy_codes(rec.get("folio_legado"))
+        if rec_legacy:
+            for row in existing:
+                if row["ticket"] in used:
+                    continue
+                if rec_legacy & legacy_codes(row.get("folio_legado")):
+                    match = row
+                    break
+        if match is None:
+            for row in existing:
+                if row["ticket"] in used:
+                    continue
+                if (norm(rec.get("cliente_nombre") or "") == norm(row.get("cliente_nombre") or "")
+                        and norm(rec.get("dispositivo_modelo") or "") == norm(row.get("dispositivo_modelo") or "")):
+                    match = row
+                    break
+        if match is not None:
+            rec["ticket"] = match["ticket"]
+            used.add(match["ticket"])
+            matched.add(id(rec))
+
+    max_by_year = {}
+    for row in existing:
+        m = re.fullmatch(r"MM-(\d{4})-(\d+)", row["ticket"])
+        if m:
+            max_by_year[m.group(1)] = max(max_by_year.get(m.group(1), 0), int(m.group(2)))
+
+    pending = [r for r in records if id(r) not in matched]
+    pending.sort(key=lambda r: (r.get("fecha_intervencion") or "9999", r.get("folio_legado") or ""))
+    for rec in pending:
+        year = (rec.get("fecha_intervencion") or "0000")[:4]
+        max_by_year[year] = max_by_year.get(year, 0) + 1
+        rec["ticket"] = f"MM-{year}-{max_by_year[year]:03d}"
+        used.add(rec["ticket"])
+
+    for rec in records:
+        rec["sha256"] = seal(rec)
+
+    tickets = [r["ticket"] for r in records]
+    if len(tickets) != len(set(tickets)):
+        print("ERROR: tickets duplicados tras reutilizar; abortando.")
+        return None
+    print(f"Tickets conservados: {len(matched)} | Nuevos: {len(pending)}")
+    return records
+
+
 def push(records):
     env = load_env()
     url = (env.get("SUPABASE_URL") or "").rstrip("/")
@@ -335,9 +459,30 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--push", action="store_true", help="sube a Supabase")
     ap.add_argument("--check", action="store_true", help="verifica RPC y bloqueo")
+    ap.add_argument("--rotate", metavar="TICKET", help="genera un token nuevo para una ficha")
+    ap.add_argument("--link", metavar="TICKET", help="imprime el enlace actual de una ficha")
     args = ap.parse_args()
 
+    if args.rotate:
+        rotate_or_link(args.rotate, True)
+        return
+    if args.link:
+        rotate_or_link(args.link, False)
+        return
+
     records, discarded = reconcile()
+
+    if args.push:
+        url, key = admin_env()
+        if not url:
+            sys.exit(1)
+        existing = fetch_existing(url, key)
+        if existing is None:
+            sys.exit(1)
+        records = reuse_tickets(records, existing)
+        if records is None:
+            sys.exit(1)
+
     OUT.parent.mkdir(parents=True, exist_ok=True)
     OUT.write_text(json.dumps(records, ensure_ascii=False, indent=2), encoding="utf-8")
 
